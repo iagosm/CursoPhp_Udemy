@@ -9,20 +9,10 @@
         'Estefane' => 20
     ];
 
-    // foreach($nomes as $nome => $values){
-    //     echo "<table>
-    //     <td> 
-    //     <th></th>
-    //         <tr>
-    //             $nome
-    //         </tr>
-    //     </td>
-    // </table>";
-    // }
-    
+
     ?>
 
-    <table border="1px solid red">
+    <table border="1px">
         <tr>
             <th>Nome:</th>
             <th>Idade:</th>
