@@ -1,9 +1,9 @@
 <?php
 
 $host = "localhost";
-$db = "moviestar";
+$db = "moviestars";
 $user = "root";
-$password = "root";
+$password = "";
 
 $conn = new PDO("mysql:host=$host;dbname=$db", $user, $password);
 
