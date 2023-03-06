@@ -76,13 +76,11 @@
 
             $message->setMenssage("Seja Bem-vindo!", "sucess", "editprofile.php");
             
-
-
-
+            
         //Redireciona caso n consiga autenticar
         }else{
             
-            $message->setMenssage("Por favor, preencha os campos corretamente!", "error", "auth.php");
+            $message->setMenssage("E-mail e/ou senha incorretos!", "error", "auth.php");
 
         }
 

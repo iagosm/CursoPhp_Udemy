@@ -18,20 +18,23 @@
                 $this->message = new Message($url);
             }
 
-            public function buildUser($data){
+            public function buildUser($data) {
 
-                $user = new User(); 
+                $user = new User();
+          
                 $user->id = $data["id"];
                 $user->name = $data["name"];
                 $user->lastname = $data["lastname"];
+                $user->email = $data["mail"];
                 $user->password = $data["password"];
                 $user->image = $data["image"];
                 $user->bio = $data["bio"];
                 $user->token = $data["token"];
-
+          
                 return $user;
-
-            }
+          
+              }
+          
             public function create(User $user, $authUser = false){
                 
                 $stmt = $this->conn->prepare("INSERT INTO users
@@ -57,7 +60,7 @@
                 $stmt = $this->conn->prepare("UPDATE users SET
                   name = :name,
                   lastname = :lastname,
-                --   mail = :mail,
+                  mail = :email,
                   image = :image,
                   bio = :bio,
                   token = :token
@@ -66,7 +69,7 @@
           
                 $stmt->bindParam(":name", $user->name);
                 $stmt->bindParam(":lastname", $user->lastname);
-                // $stmt->bindParam(":mail", $user->email);
+                $stmt->bindParam(":email", $user->email);
                 $stmt->bindParam(":image", $user->image);
                 $stmt->bindParam(":bio", $user->bio);
                 $stmt->bindParam(":token", $user->token);
@@ -77,72 +80,85 @@
                 if($redirect) {
           
                   // Redireciona para o perfil do usuario
-                  $this->message->setMenssage("Faça a autenticação para acessar a página!!", "error", "editprofile.php");
-                 
+                  $this->message->setMenssage("Dados atualizados com sucesso!", "success", "editprofile.php");
           
                 }
           
               }
-            public function verifyToken($protected = false){
-                //Pegar o Token da sessão
-                if(!empty($_SESSION["token"])){
 
-                    $token = $_SESSION["token"];
-                    $user = $this->findByToken($token);
+              public function verifyToken($protected = false) {
 
-                    if($user){
-                        return $user;
-                    }else if($protected){
-                        
-                        //Redireciona usuario n autenticado
-                        $this->message->setMenssage("Faça a autenticação para acessar a página!!", "error", "index.php");
-                    }
-
-
-                }else if($protected){
-                        
-                    //Redireciona usuario n autenticado
-                    $this->message->setMenssage("Faça a autenticação para acessar a página!!", "error", "index.php");
+                if(!empty($_SESSION["token"])) {
+          
+                  // Pega o token da session
+                  $token = $_SESSION["token"];
+          
+                  $user = $this->findByToken($token);
+          
+                  if($user) {
+                    return $user;
+                  } else if($protected) {
+          
+                    // Redireciona usuário não autenticado
+                    $this->message->setMenssage("Faça a autenticação para acessar esta página!", "error", "index.php");
+          
+                  }
+          
+                } else if($protected) {
+          
+                  // Redireciona usuário não autenticado
+                  $this->message->setMenssage("Faça a autenticação para acessar esta página!", "error", "index.php");
+          
                 }
+          
+              }
 
-            }
-            public function setTokenToSession($token, $redirect = true){
-                
-                //Salvar token na session
+              public function setTokenToSession($token, $redirect = true) {
+
+                // Salvar token na session
                 $_SESSION["token"] = $token;
-                
-                if($redirect){
-
-                    //Redireciona para o perfil do usuario
-                    $this->message->setMenssage("Seja bem vindo!", "sucess", "editprofile.php");
-
+          
+                if($redirect) {
+          
+                  // Redireciona para o perfil do usuario
+                  $this->message->setMenssage("Seja bem-vindo!", "success", "editprofile.php");
+          
                 }
+          
+              }
+              public function authenticateUser($email, $password) {
 
-            }
-            public function authenticateUser($email, $password){
-                
                 $user = $this->findByEmail($email);
-                if($user){
-
-                    if(password_verify($password, $user->password)){
-                        //Checar a senha
-                         //Gerar Token
-                        $token = $user->generateToken();
-                        $this->setTokenToSession($token, false);
-
-                        //Atualizar Token no usuario
-                        $user->token = $token;
-                        $this->update($user, false);
-                        
-                        return true;
-
-                    }else{
-                        return false;
-                    }
-                }else{
+          
+                if($user) {
+          
+                  // Checar se as senhas batem
+                  if(password_verify($password, $user->password)) {
+          
+                    // Gerar um token e inserir na session
+                    $token = $user->generateToken();
+          
+                    $this->setTokenToSession($token, false);
+          
+                    // Atualizar token no usuário
+                    $user->token = $token;
+          
+                    $this->update($user, false);
+          
+                    return true;
+          
+                  } else {
                     return false;
+                  }
+          
+                } else {
+          
+                  return false;
+          
                 }
-            }
+          
+              }
+              
             public function findByEmail($email){
                 
                 if($email != ""){
