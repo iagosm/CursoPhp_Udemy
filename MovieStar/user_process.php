@@ -34,27 +34,75 @@
         $userData->email = $email;
         $userData->bio = $bio;
 
-        //upload img
-        if(isset($_FILES['image']) && !empty($_FILES['image']['tmp_name'])){
+            // Upload da imagem
+            if(isset($_FILES["image"]) && !empty($_FILES["image"]["tmp_name"])) {
             
-            $image = $_FILES["image"];
-            $imageTypes = ["image/jpeg", "image/jpg", "image/png"];
-
-            //checar o tipo da imagem
-            if(in_array($image["type"], $imageTypes)){
-
-            }else{
-                //se n for o tipo valido, msg erro
-                $message->setMenssage("Esse tipo de imagem não é valido!", "error", "editprofile.php");
-
+                $image = $_FILES["image"];
+                $imageTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif" , "image/bmp"];
+                $jpgArray = ["image/jpeg", "image/jpg"];
+        
+                //PEGANDO EXTENSÃO DO ARQUIVO
+                $ext = strtolower(substr($image['name'],-4));
+        
+                // Checagem de tipo de imagem
+                if(in_array($image["type"], $imageTypes)) {
+        
+                if($ext == ".jpg") {
+        
+                    $imageFile = imagecreatefromjpeg($image["tmp_name"]);
+        
+                } else if($ext == ".png") {
+        
+                    $imageFile = imagecreatefrompng($image["tmp_name"]);
+        
+                } else {
+        
+                    $message->setMenssage("Tipo inválido de imagem, insira png ou jpg!", "error", "back");
+        
+                }
+        
+                $imageName = $user->imageGenerateName($ext);
+                imagejpeg($imageFile, "./img/users/" . $imageName, 100);
+                $userData->image = $imageName;
+        
+                } else {
+        
+                $message->setMenssage("Tipo inválido de imagem, insira png ou jpg!", "error", "back");
+        
+                }
             }
-        }        
+        
+            $userDao->update($userData);
 
-        $userDao->update($userData);
 
         //Atualizar senha
     }else if($type == "changepassword"){
-        echo "a";
+
+        //Receber os dados
+        $password = filter_input(INPUT_POST, "password");
+        $confirmpassword = filter_input(INPUT_POST, "confirmpassword");
+        
+
+        //Resgatar dados do usuario
+        $userData = $userDao->verifyToken();
+        $id = $userData->id;
+
+        if($password == $confirmpassword){
+            //criar um novo objeto de usuario
+            $user = new User();
+
+            $finalPassword = $user->generatePassword($password);
+            $user->password = $finalPassword;
+            $user->id = $id;
+
+            $userDao->changePassword($user);
+
+        }else{
+
+        $message->setMenssage("As senhas não são iguais!", "error", "back");   
+
+        }
+
     }else{
         $message->setMenssage("Informações inválidas!", "error", "index.php");   
     }

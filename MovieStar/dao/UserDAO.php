@@ -80,7 +80,7 @@
                 if($redirect) {
           
                   // Redireciona para o perfil do usuario
-                  $this->message->setMenssage("Dados atualizados com sucesso!", "success", "editprofile.php");
+                  $this->message->setMenssage("Dados atualizados com sucesso!", "sucess", "editprofile.php");
           
                 }
           
@@ -223,6 +223,18 @@
 
             public function changePassword(User $user){
                 
+                $stmt = $this->conn->prepare("UPDATE users SET
+                password = :password
+                WHERE id = :id
+                ");
+
+                $stmt->bindParam(":password", $user->password);
+                $stmt->bindParam(":id", $user->id);
+
+                $stmt->execute();
+
+                //Redirecionar e apresentar mensagem de sucesso
+                $this->message->setMenssage("Senha alterada com sucesso!", "sucess", "editprofile.php");
             }
 
 
