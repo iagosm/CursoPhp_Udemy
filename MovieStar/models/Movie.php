@@ -12,7 +12,7 @@ class Movie{
     public $users_id;
 
     public function imageGenerateName($ext){
-        return bin2hex(random_bytes(60) . $ext);
+        return bin2hex(random_bytes(60)) . $ext;
     }
 
 }

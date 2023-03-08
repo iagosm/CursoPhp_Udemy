@@ -40,28 +40,27 @@ if(!empty($title) && !empty($description) && !empty($category)){
     //Upload da img
     if(isset($_FILES["image"]) && !empty($_FILES["image"]["tmp_name"])){
         $image = $_FILES["image"];
-        $imageTypes = ["image/jpeg", "image/jpg", "image/png"];
+        $imageTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif" , "image/bmp"];
         $jpgArray = ["image/jpeg", "image/jpg"];
         //PEGANDO EXTENSÃO DO ARQUIVO
-        $ext = strtolower(substr($image['name'],-4));
+        $ext = strtolower(substr($image["name"],-4));
         
         // Checagem de tipo de imagem
         if(in_array($image["type"], $imageTypes)) {
 
-        if($ext == ".jpg") {
+        if($ext == ".jpg"){
 
             $imageFile = imagecreatefromjpeg($image["tmp_name"]);
 
         } else if($ext == ".png") {
 
             $imageFile = imagecreatefrompng($image["tmp_name"]);
-
         } else {
 
             $message->setMenssage("Tipo inválido de imagem, insira png ou jpg!", "error", "back");
 
         }
-
+        
         $imageName = $movie->imageGenerateName($ext);
         imagejpeg($imageFile, "./img/movies/" . $imageName, 100);
         $movie->image = $imageName;
