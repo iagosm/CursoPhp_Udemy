@@ -1,0 +1,18 @@
+/* Box model */
+.boxmodel{
+    width: 200px;
+    height: 200px;
+    background-color: red;
+    padding: 20px;
+    /* display: none; some*/
+
+}
+
+body{
+    margin: 0;
+}
+
+.paragrafo-box{
+    color: #ffff;
+    margin: 0;
+}
